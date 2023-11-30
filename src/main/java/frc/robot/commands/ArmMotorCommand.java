@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import frc.robot.subsystems.ArmMotorSubsystem;
 
 public class ArmMotorCommand extends CommandBase {
@@ -24,6 +25,7 @@ public class ArmMotorCommand extends CommandBase {
   @Override
   public void execute() {
     armMotorSubsystem.moveArm();
+    System.out.println("Arm position: " + armMotorSubsystem.getArmPosition());
   }
 
   // Called once the command ends or is interrupted.

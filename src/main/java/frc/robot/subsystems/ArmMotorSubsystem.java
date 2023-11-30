@@ -26,12 +26,16 @@ public class ArmMotorSubsystem extends SubsystemBase {
   private double kG = Constants.kG;
   private double kV = Constants.kV;
   private double kA = Constants.kA;
+
+  private double kP = Constants.kP;
+  private double kI = Constants.kI;
+  private double kD = Constants.kD;
   
 
   public ArmMotorSubsystem() {
     armMotor = new TalonFX(Constants.ARM_MOTOR_CHANNEL);
     pJoystick = new Joystick(Constants.RIGHT_JOYSTICK);
-    analogInput = new AnalogInput(Constants.ARM_MOTOR_CHANNEL);
+    analogInput = new AnalogInput(Constants.ARM_ENCODER);
     feedforward = new ArmFeedforward(kS, kG, kV, kA);
     feedforward.calculate(Constants.ARM_POSITION_FEEDFORWARD, Constants.ARM_VELOCITY_FEEDFORWARD, Constants.ARM_ACCELERATION_FEEDFORWARD);
     pid = new PIDController(kP, kI, kD);
@@ -42,6 +46,10 @@ public class ArmMotorSubsystem extends SubsystemBase {
   public void armMotorWithFeedforward(double armVelocity) {
     armMotor.set(ControlMode.PercentOutput, (feedforward.calculate(analogInput.getValue(), armVelocity)));
   }  
+  public double getArmPosition(){
+    // TODO: Change it=>  
+    return analogInput.getVoltage();
+  }
   public void armStop() {
     armMotor.set(ControlMode.PercentOutput, 0);
   }
