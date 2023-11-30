@@ -23,4 +23,14 @@ public final class Constants {
   public final static int ARM_PNEUMATIC_BUTTON = 3;
   public final static int ARM_MOTOR_CHANNEL = 21;
   public final static int ARM_MOVE_BUTTON = 2;
+
+  public final static int ARM_POSITION_FEEDFORWARD = 1;
+  public final static int ARM_VELOCITY_FEEDFORWARD = 2;
+  public final static int ARM_ACCELERATION_FEEDFORWARD = 3;
+
+  public final static double kS = 2;
+  public final static double kG = 1.75;
+  public final static double kV = 1.95;
+  public final static double kA = 0;
+  
 }
