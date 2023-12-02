@@ -10,6 +10,7 @@ import frc.robot.commands.ClawPneumaticsCommand;
 import frc.robot.subsystems.ArmMotorSubsystem;
 import frc.robot.subsystems.ArmPneumaticSubsystem;
 import frc.robot.subsystems.ClawPneumaticSubsystem;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -33,6 +34,9 @@ public class RobotContainer {
   private final ArmMotorCommand m_ArmMotorCommand = new ArmMotorCommand(m_armMotorSubsystem);
 
   private final Joystick joysticks = new Joystick(Constants.RIGHT_JOYSTICK);
+
+  //private final AnalogInput analogInput = new AnalogInput(Constants.ARM_ENCODER);
+  
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {

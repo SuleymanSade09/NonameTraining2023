@@ -28,7 +28,7 @@ public final class Constants {
   public final static int ARM_VELOCITY_FEEDFORWARD = 2;
   public final static int ARM_ACCELERATION_FEEDFORWARD = 3;
 
-  public final static int ARM_ENCODER = 8;
+  public final static int ARM_ENCODER = 7;
 
   public final static double kS = 2;
   public final static double kG = 1.75;

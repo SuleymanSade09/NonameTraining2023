@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -19,6 +20,7 @@ public class ArmMotorSubsystem extends SubsystemBase {
   Joystick pJoystick;
   ArmFeedforward feedforward;
   AnalogInput analogInput;
+  AnalogEncoder analogEncoder;
   PIDController pid;
 
   private double armVelocity = Constants.ARM_VELOCITY_FEEDFORWARD;
@@ -36,19 +38,24 @@ public class ArmMotorSubsystem extends SubsystemBase {
     armMotor = new TalonFX(Constants.ARM_MOTOR_CHANNEL);
     pJoystick = new Joystick(Constants.RIGHT_JOYSTICK);
     analogInput = new AnalogInput(Constants.ARM_ENCODER);
+    analogEncoder = new AnalogEncoder(Constants.ARM_ENCODER);
     feedforward = new ArmFeedforward(kS, kG, kV, kA);
     feedforward.calculate(Constants.ARM_POSITION_FEEDFORWARD, Constants.ARM_VELOCITY_FEEDFORWARD, Constants.ARM_ACCELERATION_FEEDFORWARD);
     pid = new PIDController(kP, kI, kD);
+
+    analogEncoder.reset();
 
     //armVelocity...
   }
 
   public void armMotorWithFeedforward(double armVelocity) {
-    armMotor.set(ControlMode.PercentOutput, (feedforward.calculate(analogInput.getValue(), armVelocity)));
+    //armMotor.set(ControlMode.PercentOutput, (feedforward.calculate(analogInput.getValue(), armVelocity)));
   }  
   public double getArmPosition(){
     // TODO: Change it=>  
-    return analogInput.getVoltage();
+    //return analogInput.getValue();
+    return analogEncoder.getDistance();
+    //return 0;
   }
   public void armStop() {
     armMotor.set(ControlMode.PercentOutput, 0);
