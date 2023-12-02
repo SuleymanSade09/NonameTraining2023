@@ -32,6 +32,8 @@ public class ArmMotorSubsystem extends SubsystemBase {
   double pidValue;
   double feedforwardValue;
 
+  double velocity;
+
   private double armVelocity = Constants.ARM_VELOCITY_FEEDFORWARD;
   private double kS = Constants.kS;
   private double kG = Constants.kG;
@@ -44,6 +46,7 @@ public class ArmMotorSubsystem extends SubsystemBase {
   
 
   public ArmMotorSubsystem() {
+    timer = new Timer();
     armMotor = new TalonFX(Constants.ARM_MOTOR_CHANNEL);
     pJoystick = new Joystick(Constants.RIGHT_JOYSTICK);
     //analogInput = new AnalogInput(Constants.ARM_ENCODER);
@@ -70,17 +73,14 @@ public class ArmMotorSubsystem extends SubsystemBase {
   public double getVelociy(){
 
     initialPos = getArmPosition();
-    timer.reset();
+    
     timer.start();
     initialTimer = timer.get();
-
-    try {
-      Thread.sleep(100);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
+    if (timer.get()-initialTimer >= 0.01) {
+      velocity = Math.abs((double)(getArmPosition() - initialPos)/(timer.get()-initialTimer));
     }
     timer.stop();
-    return (double)(initialPos - getArmPosition())/(timer.get()-initialTimer);
+    return velocity;
   }
   public void armStop() {
     armMotor.set(ControlMode.PercentOutput, 0);
@@ -91,7 +91,8 @@ public class ArmMotorSubsystem extends SubsystemBase {
   public void moveArm() {
     // pidValue = pidValue();
     // feedforwardValue = armMotorWithFeedforward();
-    armMotor.set(ControlMode.PercentOutput, pidValue() + armMotorWithFeedforward());
+    // armMotor.set(ControlMode.PercentOutput, (pidValue() + armMotorWithFeedforward())*0.15);
+    armMotor.set(ControlMode.PercentOutput, getThrottleValue()*0.15);
   }
   @Override
   public void periodic() {

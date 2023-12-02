@@ -25,7 +25,7 @@ public class ArmMotorCommand extends CommandBase {
   @Override
   public void execute() {
     armMotorSubsystem.moveArm();
-    System.out.println("Arm position: " + armMotorSubsystem.getArmPosition());
+    System.out.println("Arm velocity: " + armMotorSubsystem.getVelociy());
   }
 
   // Called once the command ends or is interrupted.
