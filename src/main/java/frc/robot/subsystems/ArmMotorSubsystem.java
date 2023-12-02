@@ -11,6 +11,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.AnalogEncoder;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -19,9 +20,17 @@ public class ArmMotorSubsystem extends SubsystemBase {
   TalonFX armMotor;
   Joystick pJoystick;
   ArmFeedforward feedforward;
-  AnalogInput analogInput;
+  //AnalogInput analogInput;
   AnalogEncoder analogEncoder;
   PIDController pid;
+
+  double initialPos;
+  double initialTimer;
+
+  Timer timer;
+
+  double pidValue;
+  double feedforwardValue;
 
   private double armVelocity = Constants.ARM_VELOCITY_FEEDFORWARD;
   private double kS = Constants.kS;
@@ -37,25 +46,41 @@ public class ArmMotorSubsystem extends SubsystemBase {
   public ArmMotorSubsystem() {
     armMotor = new TalonFX(Constants.ARM_MOTOR_CHANNEL);
     pJoystick = new Joystick(Constants.RIGHT_JOYSTICK);
-    analogInput = new AnalogInput(Constants.ARM_ENCODER);
+    //analogInput = new AnalogInput(Constants.ARM_ENCODER);
     analogEncoder = new AnalogEncoder(Constants.ARM_ENCODER);
     feedforward = new ArmFeedforward(kS, kG, kV, kA);
     feedforward.calculate(Constants.ARM_POSITION_FEEDFORWARD, Constants.ARM_VELOCITY_FEEDFORWARD, Constants.ARM_ACCELERATION_FEEDFORWARD);
     pid = new PIDController(kP, kI, kD);
 
     analogEncoder.reset();
+    analogEncoder.setDistancePerRotation(360);
 
     //armVelocity...
   }
 
-  public void armMotorWithFeedforward(double armVelocity) {
-    //armMotor.set(ControlMode.PercentOutput, (feedforward.calculate(analogInput.getValue(), armVelocity)));
+  public double armMotorWithFeedforward() {
+    return feedforward.calculate(getArmPosition(), getVelociy());
   }  
   public double getArmPosition(){
-    // TODO: Change it=>  
-    //return analogInput.getValue();
-    return analogEncoder.getDistance();
-    //return 0;
+    return Math.abs((analogEncoder.getDistance()));
+  }
+  public double pidValue(){
+    return pid.calculate(getArmPosition(), getThrottleValue());
+  }
+  public double getVelociy(){
+
+    initialPos = getArmPosition();
+    timer.reset();
+    timer.start();
+    initialTimer = timer.get();
+
+    try {
+      Thread.sleep(100);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    timer.stop();
+    return (double)(initialPos - getArmPosition())/(timer.get()-initialTimer);
   }
   public void armStop() {
     armMotor.set(ControlMode.PercentOutput, 0);
@@ -64,7 +89,9 @@ public class ArmMotorSubsystem extends SubsystemBase {
     return pJoystick.getThrottle();
   }
   public void moveArm() {
-    armMotor.set(ControlMode.PercentOutput, getThrottleValue()*0.15);
+    // pidValue = pidValue();
+    // feedforwardValue = armMotorWithFeedforward();
+    armMotor.set(ControlMode.PercentOutput, pidValue() + armMotorWithFeedforward());
   }
   @Override
   public void periodic() {
