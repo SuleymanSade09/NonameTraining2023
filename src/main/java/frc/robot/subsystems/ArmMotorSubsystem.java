@@ -9,11 +9,11 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.AnalogEncoder;
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.ArmMotorCommand;
 
 public class ArmMotorSubsystem extends SubsystemBase {
   /** Creates a new ArmMotorSubsystem. */
@@ -34,7 +34,6 @@ public class ArmMotorSubsystem extends SubsystemBase {
 
   double velocity;
 
-  private double armVelocity = Constants.ARM_VELOCITY_FEEDFORWARD;
   private double kS = Constants.kS;
   private double kG = Constants.kG;
   private double kV = Constants.kV;
@@ -62,26 +61,25 @@ public class ArmMotorSubsystem extends SubsystemBase {
   }
 
   public double armMotorWithFeedforward() {
-    return feedforward.calculate(getArmPosition(), getVelociy());
+    return feedforward.calculate(getArmPosition(), ArmMotorCommand.velocity);
   }  
   public double getArmPosition(){
     return Math.abs((analogEncoder.getDistance()));
   }
   public double pidValue(){
-    return pid.calculate(getArmPosition(), getThrottleValue());
+    return pid.calculate(getArmPosition(), getArmPosition());
   }
-  public double getVelociy(){
+  // public double getVelociy(){
 
-    initialPos = getArmPosition();
+  //   initialPos = getArmPosition();
     
-    timer.start();
-    initialTimer = timer.get();
-    if (timer.get()-initialTimer >= 0.01) {
-      velocity = Math.abs((double)(getArmPosition() - initialPos)/(timer.get()-initialTimer));
-    }
-    timer.stop();
-    return velocity;
-  }
+  //   initialTimer = timer.get();
+  //   if (timer.get()-initialTimer >= 0.01) {
+  //     velocity = Math.abs((double)(getArmPosition() - initialPos)/(timer.get()-initialTimer));
+  //   }
+  //   timer.stop();
+  //   return velocity;
+  // }
   public void armStop() {
     armMotor.set(ControlMode.PercentOutput, 0);
   }
@@ -91,8 +89,8 @@ public class ArmMotorSubsystem extends SubsystemBase {
   public void moveArm() {
     // pidValue = pidValue();
     // feedforwardValue = armMotorWithFeedforward();
-    // armMotor.set(ControlMode.PercentOutput, (pidValue() + armMotorWithFeedforward())*0.15);
-    armMotor.set(ControlMode.PercentOutput, getThrottleValue()*0.15);
+    armMotor.set(ControlMode.PercentOutput, (pidValue() + armMotorWithFeedforward())*0.2);
+    // armMotor.set(ControlMode.PercentOutput, getThrottleValue()*0.15);
   }
   @Override
   public void periodic() {
